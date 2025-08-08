@@ -1,0 +1,358 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrailGuide - Smart Hiking Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'forest': '#2D5016',
+                    'sage': '#87A96B',
+                    'earth': '#8B4513',
+                    'tan': '#D2B48C',
+                    'mountain-blue': '#4A90E2',
+                    'sunset': '#FF8C42',
+                    'stone': '#F5F5F0',
+                    'charcoal': '#2C2C2C'
+                },
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif'],
+                    'merriweather': ['Merriweather', 'serif']
+                }
+            }
+        }
+    };
+    </script>
+</head>
+<body class="bg-stone font-inter text-charcoal">
+    <!-- @COMPONENT: MainApp -->
+    <div class="max-w-sm mx-auto bg-white shadow-2xl min-h-screen relative">
+        
+        <!-- @COMPONENT: StatusBar -->
+        <div class="bg-forest text-white px-4 py-1 text-xs flex justify-between items-center">
+            <span>9:41</span>
+            <div class="flex items-center space-x-1">
+                <i class="fas fa-signal text-xs"></i>
+                <i class="fas fa-wifi text-xs"></i>
+                <i class="fas fa-battery-three-quarters text-xs"></i>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: StatusBar -->
+
+        <!-- @COMPONENT: AppHeader -->
+        <header class="bg-forest text-white px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-mountain text-xl text-sage"></i>
+                <h1 class="font-merriweather font-bold text-lg">TrailGuide</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <!-- Notification Badge -->
+                <div class="relative">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 bg-sunset text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                </div>
+                <i class="fas fa-user-circle text-xl"></i>
+            </div>
+        </header>
+        <!-- @END_COMPONENT: AppHeader -->
+
+        <!-- @COMPONENT: MainContent -->
+        <main class="pb-20">
+            
+            <!-- @COMPONENT: ActiveTrackingCard -->
+            <div class="bg-gradient-to-r from-sage to-forest text-white mx-4 mt-4 rounded-xl p-4 shadow-lg">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-lg">Current Hike</h3>
+                    <div class="bg-green-400 px-3 py-1 rounded-full text-sm font-medium">LIVE</div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold" data-bind="currentHike.distance">2.3</div>
+                        <div class="text-sm opacity-90">Miles</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold" data-bind="currentHike.elevation">1,247</div>
+                        <div class="text-sm opacity-90">Ft Gained</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold" data-bind="currentHike.duration">1:42</div>
+                        <div class="text-sm opacity-90">Hours</div>
+                    </div>
+                </div>
+                <div class="flex space-x-3 mt-4">
+                    <button class="flex-1 bg-white text-forest py-2 rounded-lg font-semibold" data-event="click:pauseHike">
+                        <i class="fas fa-pause mr-2"></i>Pause
+                    </button>
+                    <button class="flex-1 bg-sunset py-2 rounded-lg font-semibold" data-event="click:stopHike">
+                        <i class="fas fa-stop mr-2"></i>Finish
+                    </button>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ActiveTrackingCard -->
+
+            <!-- @COMPONENT: QuickActions -->
+            <div class="px-4 mt-6">
+                <h2 class="font-merriweather font-bold text-xl mb-4">Quick Actions</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="bg-white border-2 border-sage p-4 rounded-xl text-center shadow-sm" data-event="click:findNearbyTrails">
+                        <i class="fas fa-location-dot text-2xl text-sage mb-2"></i>
+                        <div class="font-semibold text-forest">Find Nearby</div>
+                        <div class="text-sm text-gray-600">Discover trails</div>
+                    </button>
+                    <button class="bg-white border-2 border-mountain-blue p-4 rounded-xl text-center shadow-sm" data-event="click:reportEvent">
+                        <i class="fas fa-exclamation-triangle text-2xl text-mountain-blue mb-2"></i>
+                        <div class="font-semibold text-forest">Report Event</div>
+                        <div class="text-sm text-gray-600">Alert others</div>
+                    </button>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: QuickActions -->
+
+            <!-- @COMPONENT: RecentAlerts -->
+            <div class="px-4 mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-merriweather font-bold text-xl">Trail Alerts</h2>
+                    <span class="text-sm text-sage">View All</span>
+                </div>
+                
+                <!-- @MAP: alerts.map(alert => ( -->
+                <div class="bg-yellow-50 border-l-4 border-sunset p-3 rounded-r-lg mb-3" data-mock="true">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-snowflake text-mountain-blue mt-1"></i>
+                        <div class="flex-1">
+                            <div class="font-semibold text-sm">Snow Conditions - Eagle Peak Trail</div>
+                            <div class="text-xs text-gray-600 mt-1">Microspikes recommended. Trail icy above 8,000ft.</div>
+                            <div class="text-xs text-sage mt-1">2 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-lg mb-3" data-mock="true">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-bear text-red-600 mt-1"></i>
+                        <div class="flex-1">
+                            <div class="font-semibold text-sm">Wildlife Alert - Cascade Loop</div>
+                            <div class="text-xs text-gray-600 mt-1">Black bear spotted near mile marker 3. Use caution.</div>
+                            <div class="text-xs text-sage mt-1">4 hours ago • Reported by Jake_Hiker</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+            <!-- @END_COMPONENT: RecentAlerts -->
+
+            <!-- @COMPONENT: NearbyTrails -->
+            <div class="px-4 mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-merriweather font-bold text-xl">Nearby Trails</h2>
+                    <button class="text-sm text-sage" data-event="click:showAllTrails">See All</button>
+                </div>
+
+                <!-- @MAP: nearbyTrails.map(trail => ( -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-4 overflow-hidden" data-mock="true">
+                    <!-- Beautiful mountain trail with pine trees and rocky peaks -->
+                    <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Mountain trail" class="w-full h-32 object-cover" data-mock-image="true" />
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-forest" data-bind="trail.name">Eagle Peak Summit</h3>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-star text-sunset text-sm"></i>
+                                <span class="text-sm font-medium" data-bind="trail.rating">4.7</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                            <span data-bind="trail.distance">5.2 mi</span>
+                            <span data-bind="trail.elevation">+1,847 ft</span>
+                            <span class="px-2 py-1 bg-earth text-white rounded-full text-xs" data-bind="trail.difficulty">Moderate</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 text-sm text-gray-600">
+                                <i class="fas fa-location-dot text-sage"></i>
+                                <span data-bind="trail.distance_from_user">1.2 mi away</span>
+                            </div>
+                            <button class="bg-sage text-white px-4 py-2 rounded-lg text-sm font-medium" data-event="click:viewTrail">
+                                View Trail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-4 overflow-hidden" data-mock="true">
+                    <!-- Serene forest trail with dappled sunlight through trees -->
+                    <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Forest trail" class="w-full h-32 object-cover" data-mock-image="true" />
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-forest" data-bind="trail.name">Whispering Pines Loop</h3>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-star text-sunset text-sm"></i>
+                                <span class="text-sm font-medium" data-bind="trail.rating">4.3</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                            <span data-bind="trail.distance">3.1 mi</span>
+                            <span data-bind="trail.elevation">+542 ft</span>
+                            <span class="px-2 py-1 bg-sage text-white rounded-full text-xs" data-bind="trail.difficulty">Easy</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 text-sm text-gray-600">
+                                <i class="fas fa-location-dot text-sage"></i>
+                                <span data-bind="trail.distance_from_user">0.8 mi away</span>
+                            </div>
+                            <button class="bg-sage text-white px-4 py-2 rounded-lg text-sm font-medium" data-event="click:viewTrail">
+                                View Trail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+            <!-- @END_COMPONENT: NearbyTrails -->
+
+        </main>
+        <!-- @END_COMPONENT: MainContent -->
+
+        <!-- @COMPONENT: BottomNavigation -->
+        <nav class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white border-t border-gray-200 px-4 py-2">
+            <div class="flex items-center justify-around">
+                <button class="flex flex-col items-center py-2 text-sage" data-event="click:navigateToHome">
+                    <i class="fas fa-house text-lg mb-1"></i>
+                    <span class="text-xs font-medium">Home</span>
+                </button>
+                <button class="flex flex-col items-center py-2 text-gray-400" data-event="click:navigateToMap">
+                    <i class="fas fa-map text-lg mb-1"></i>
+                    <span class="text-xs">Map</span>
+                </button>
+                <button class="flex flex-col items-center py-2 text-gray-400" data-event="click:navigateToSearch">
+                    <i class="fas fa-magnifying-glass text-lg mb-1"></i>
+                    <span class="text-xs">Search</span>
+                </button>
+                <button class="flex flex-col items-center py-2 text-gray-400" data-event="click:navigateToActivity">
+                    <i class="fas fa-chart-line text-lg mb-1"></i>
+                    <span class="text-xs">Activity</span>
+                </button>
+                <button class="flex flex-col items-center py-2 text-gray-400" data-event="click:navigateToProfile">
+                    <i class="fas fa-user text-lg mb-1"></i>
+                    <span class="text-xs">Profile</span>
+                </button>
+            </div>
+        </nav>
+        <!-- @END_COMPONENT: BottomNavigation -->
+
+        <!-- @COMPONENT: FloatingActionButton -->
+        <button class="fixed bottom-20 right-4 bg-sunset text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center z-10" data-event="click:startNewHike">
+            <i class="fas fa-play text-xl"></i>
+        </button>
+        <!-- @END_COMPONENT: FloatingActionButton -->
+
+    </div>
+    <!-- @END_COMPONENT: MainApp -->
+
+    <!-- @COMPONENT: ModalOverlays -->
+    <!-- Event Reporting Modal -->
+    <div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6">
+            <h3 class="font-merriweather font-bold text-xl mb-4">Report Trail Event</h3>
+            <div class="space-y-3 mb-6">
+                <button class="w-full flex items-center space-x-3 p-3 border border-gray-200 rounded-lg text-left" data-event="click:reportWildlife">
+                    <i class="fas fa-bear text-red-600"></i>
+                    <span>Wildlife Sighting</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 border border-gray-200 rounded-lg text-left" data-event="click:reportHazard">
+                    <i class="fas fa-triangle-exclamation text-sunset"></i>
+                    <span>Trail Hazard</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 border border-gray-200 rounded-lg text-left" data-event="click:reportWeather">
+                    <i class="fas fa-cloud-snow text-mountain-blue"></i>
+                    <span>Weather Conditions</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 border border-gray-200 rounded-lg text-left" data-event="click:reportPhoto">
+                    <i class="fas fa-camera text-sage"></i>
+                    <span>Photo Opportunity</span>
+                </button>
+            </div>
+            <div class="flex space-x-3">
+                <button class="flex-1 border border-gray-300 py-2 rounded-lg" data-event="click:closeModal">Cancel</button>
+                <button class="flex-1 bg-sage text-white py-2 rounded-lg" data-event="click:confirmReport">Report</button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ModalOverlays -->
+
+    <script>
+    (function() {
+        // TODO: Implement business logic, API calls, and state management
+        
+        // Basic UI interaction handlers (no business logic)
+        const modal = document.getElementById('eventModal');
+        
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('[data-event*="reportEvent"]')) {
+                modal.classList.remove('hidden');
+            }
+            
+            if (e.target.matches('[data-event*="closeModal"]') || e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+        
+        // Mock notification system
+        function showNotification(message) {
+            // TODO: Implement proper notification system
+            console.log('Notification:', message);
+        }
+        
+        // Mock geolocation
+        function getCurrentLocation() {
+            // TODO: Implement actual geolocation
+            return { lat: 40.7128, lng: -74.0060 };
+        }
+        
+        // Mock data structures
+        const mockTrails = [
+            {
+                id: 1,
+                name: "Eagle Peak Summit",
+                distance: "5.2 mi",
+                elevation: "+1,847 ft",
+                difficulty: "Moderate",
+                rating: 4.7,
+                distanceFromUser: "1.2 mi away"
+            },
+            {
+                id: 2,
+                name: "Whispering Pines Loop", 
+                distance: "3.1 mi",
+                elevation: "+542 ft",
+                difficulty: "Easy",
+                rating: 4.3,
+                distanceFromUser: "0.8 mi away"
+            }
+        ];
+        
+        const mockAlerts = [
+            {
+                type: "weather",
+                trail: "Eagle Peak Trail",
+                message: "Microspikes recommended. Trail icy above 8,000ft.",
+                timestamp: "2 hours ago"
+            },
+            {
+                type: "wildlife",
+                trail: "Cascade Loop",
+                message: "Black bear spotted near mile marker 3. Use caution.",
+                timestamp: "4 hours ago",
+                reporter: "Jake_Hiker"
+            }
+        ];
+        
+    })();
+    </script>
+</body>
+</html>

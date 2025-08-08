@@ -5,13 +5,19 @@ import BottomNavigation from "@/components/layout/bottom-navigation";
 import TrailCard from "@/components/trail/trail-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search as SearchIcon, Filter } from "lucide-react";
 import type { Trail } from "@shared/schema";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [difficulty, setDifficulty] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("distance");
 
   const { data: trails = [], isLoading } = useQuery<Trail[]>({
@@ -19,22 +25,24 @@ export default function Search() {
   });
 
   const filteredTrails = trails
-    .filter(trail => !difficulty || trail.difficulty === difficulty)
+    .filter((trail) => difficulty === "all" || trail.difficulty === difficulty)
     .sort((a, b) => {
       if (sortBy === "distance") return a.distance - b.distance;
       if (sortBy === "difficulty") {
-        const difficultyOrder = { "Easy": 1, "Moderate": 2, "Hard": 3 };
-        return difficultyOrder[a.difficulty as keyof typeof difficultyOrder] - 
-               difficultyOrder[b.difficulty as keyof typeof difficultyOrder];
+        const difficultyOrder = { Easy: 1, Moderate: 2, Hard: 3 };
+        return (
+          difficultyOrder[a.difficulty as keyof typeof difficultyOrder] -
+          difficultyOrder[b.difficulty as keyof typeof difficultyOrder]
+        );
       }
-      if (sortBy === "rating") return b.rating - a.rating;
+      if (sortBy === "rating") return (b.rating ?? 0) - (a.rating ?? 0);
       return 0;
     });
 
   return (
     <>
       <AppHeader />
-      
+
       <main className="pb-20 bg-stone min-h-screen" data-testid="search-main">
         <div className="px-4 py-4">
           {/* Search Header */}
@@ -49,23 +57,29 @@ export default function Search() {
                 data-testid="input-search-trails"
               />
             </div>
-            
+
             {/* Filters */}
             <div className="flex space-x-3">
               <Select value={difficulty} onValueChange={setDifficulty}>
-                <SelectTrigger className="flex-1 bg-white" data-testid="select-difficulty">
+                <SelectTrigger
+                  className="flex-1 bg-white"
+                  data-testid="select-difficulty"
+                >
                   <SelectValue placeholder="Difficulty" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Difficulties</SelectItem>
+                  <SelectItem value="all">All Difficulties</SelectItem>
                   <SelectItem value="Easy">Easy</SelectItem>
                   <SelectItem value="Moderate">Moderate</SelectItem>
                   <SelectItem value="Hard">Hard</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="flex-1 bg-white" data-testid="select-sort">
+                <SelectTrigger
+                  className="flex-1 bg-white"
+                  data-testid="select-sort"
+                >
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -85,13 +99,19 @@ export default function Search() {
           ) : filteredTrails.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-gray-600">
-                {searchQuery ? "No trails found matching your search." : "No trails available."}
+                {searchQuery
+                  ? "No trails found matching your search."
+                  : "No trails available."}
               </div>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="text-sm text-gray-600 mb-4" data-testid="text-results-count">
-                {filteredTrails.length} trail{filteredTrails.length !== 1 ? 's' : ''} found
+              <div
+                className="text-sm text-gray-600 mb-4"
+                data-testid="text-results-count"
+              >
+                {filteredTrails.length} trail
+                {filteredTrails.length !== 1 ? "s" : ""} found
               </div>
               {filteredTrails.map((trail) => (
                 <TrailCard key={trail.id} trail={trail} />
